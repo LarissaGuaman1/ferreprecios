@@ -1,5 +1,24 @@
 import 'package:flutter/material.dart';
 
+extension ThemeExt on BuildContext {
+  bool get isDark => Theme.of(this).brightness == Brightness.dark;
+
+  Color get colorOnSurface => isDark ? Colors.white : const Color(0xFF1B3025);
+  Color get colorOnSurfaceDim => isDark ? const Color(0x73FFFFFF) : const Color(0xFF5A7A6C);
+  Color get colorCardBg => isDark ? AppColors.glassWhite : Colors.white;
+  Color get colorCardBorder => isDark ? AppColors.glassBorder : const Color(0xFFDCEDE6);
+  Color get colorSurfaceBg => isDark ? const Color(0xFF0D1F16) : Colors.white;
+  Color get colorNavBg => isDark ? const Color(0xFF0A1628) : Colors.white;
+  Color get colorAppBarBorder => isDark ? const Color(0x26FFFFFF) : const Color(0xFFDCEDE6);
+  Color get colorNavBorder => isDark ? const Color(0x1AFFFFFF) : const Color(0xFFDCEDE6);
+  Color get colorIconSecondary => isDark ? const Color(0xB3FFFFFF) : const Color(0xFF7A9A8A);
+  Color get colorNavUnselected => isDark ? const Color(0x4DFFFFFF) : const Color(0xFF9ABAAC);
+  Color get colorChipUnselectedBg => isDark ? const Color(0x0DFFFFFF) : const Color(0x0D1B3025);
+  Color get colorChipUnselectedText => isDark ? const Color(0x80FFFFFF) : const Color(0xFF5A7A6C);
+  Color get colorInputFill => isDark ? const Color(0x1AFFFFFF) : const Color(0xFFF2FAF7);
+  Color get colorDropdownBg => isDark ? const Color(0xFF1A2A4A) : Colors.white;
+}
+
 // Esta clase guarda TODOS los colores de la app en un solo lugar.
 // Así, si un color cambia, lo editas aquí una sola vez en vez de buscarlo
 // en cada pantalla.

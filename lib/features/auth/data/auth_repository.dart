@@ -30,11 +30,13 @@ class AuthRepository {
     required String nombre,
     required String email,
     required String password,
+    String rol = 'comprador',
   }) async {
     final respuesta = await _api.post('/auth/register', {
       'nombre': nombre,
       'email': email,
       'password': password,
+      'rol': rol,
     });
     return respuesta as Map<String, dynamic>;
   }

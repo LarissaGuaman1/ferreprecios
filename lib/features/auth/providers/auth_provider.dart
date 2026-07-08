@@ -22,6 +22,10 @@ class AuthProvider extends ChangeNotifier {
   String? nombreUsuario;
   String? emailUsuario;
   String? fotoUrlUsuario;
+  String rolUsuario = 'comprador';
+
+  // true si el usuario es dueño de ferretería (cambia las pestañas del nav).
+  bool get esDueno => rolUsuario == 'ferreteria';
 
   // Devuelve true/false según si el login funcionó, para que la
   // pantalla sepa si debe navegar al Home o quedarse mostrando el error.
@@ -58,6 +62,7 @@ class AuthProvider extends ChangeNotifier {
     String nombre,
     String email,
     String password, {
+    String rol = 'comprador',
     Uint8List? fotoBytes,
     String? fotoNombre,
   }) async {
@@ -70,6 +75,7 @@ class AuthProvider extends ChangeNotifier {
         nombre: nombre,
         email: email,
         password: password,
+        rol: rol,
       );
       _guardarSesion(respuesta);
 
@@ -115,6 +121,7 @@ class AuthProvider extends ChangeNotifier {
     nombreUsuario = null;
     emailUsuario = null;
     fotoUrlUsuario = null;
+    rolUsuario = 'comprador';
     notifyListeners();
   }
 
@@ -136,6 +143,7 @@ class AuthProvider extends ChangeNotifier {
     nombreUsuario = usuario['nombre'] as String?;
     emailUsuario = usuario['email'] as String?;
     fotoUrlUsuario = usuario['fotoUrl'] as String?;
+    rolUsuario = usuario['rol'] as String? ?? 'comprador';
     isAuthenticated = true;
   }
 }

@@ -99,9 +99,6 @@ class EstadoBadge extends StatelessWidget {
   }
 }
 
-// Fondo fijo en gradiente oscuro de toda la app (Glassmorphism).
-// Cada pantalla envuelve su contenido con esto en vez de depender
-// solo del scaffoldBackgroundColor (que es un sólido de respaldo).
 class AppBackground extends StatelessWidget {
   final Widget child;
 
@@ -109,14 +106,18 @@ class AppBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.isDark
+        ? const [AppColors.bgGrad1, AppColors.bgGrad2, AppColors.bgGrad3]
+        : const [Color(0xFFF0F7F4), Color(0xFFF5F9F7), Color(0xFFECF4FF)];
+
     return Container(
       width: double.infinity,
       height: double.infinity,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [AppColors.bgGrad1, AppColors.bgGrad2, AppColors.bgGrad3],
+          colors: colors,
         ),
       ),
       child: child,
@@ -124,9 +125,6 @@ class AppBackground extends StatelessWidget {
   }
 }
 
-// Tarjeta "de vidrio": fondo blanco casi transparente + borde sutil.
-// "destacado" cambia los colores a teal translúcido, para resaltar
-// (ej: la ferretería con el mejor precio).
 class GlassCard extends StatelessWidget {
   final Widget child;
   final bool destacado;
@@ -141,17 +139,23 @@ class GlassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dark = context.isDark;
     return Container(
       padding: padding,
       decoration: BoxDecoration(
-        // 0x33... = 20% opacidad, 0x99... = 60% opacidad: el borde
-        // del destacado es más visible que el de una tarjeta normal.
-        color: destacado ? const Color(0x331D9E75) : AppColors.glassWhite,
+        color: destacado
+            ? const Color(0x331D9E75)
+            : (dark ? AppColors.glassWhite : Colors.white),
         border: Border.all(
-          color: destacado ? const Color(0x991D9E75) : AppColors.glassBorder,
+          color: destacado
+              ? const Color(0x991D9E75)
+              : (dark ? AppColors.glassBorder : const Color(0xFFDCEDE6)),
           width: 0.5,
         ),
         borderRadius: BorderRadius.circular(14),
+        boxShadow: dark
+            ? null
+            : [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2))],
       ),
       child: child,
     );

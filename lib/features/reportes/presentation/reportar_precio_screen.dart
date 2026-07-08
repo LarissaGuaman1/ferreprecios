@@ -17,12 +17,16 @@ class ReportarPrecioScreen extends StatefulWidget {
 class _ReportarPrecioScreenState extends State<ReportarPrecioScreen> {
   final _busquedaController = TextEditingController();
   final _precioController = TextEditingController();
+  final _marcaController = TextEditingController();
+  final _caracteristicasController = TextEditingController();
   final _picker = ImagePicker();
 
   @override
   void dispose() {
     _busquedaController.dispose();
     _precioController.dispose();
+    _marcaController.dispose();
+    _caracteristicasController.dispose();
     super.dispose();
   }
 
@@ -46,6 +50,8 @@ class _ReportarPrecioScreenState extends State<ReportarPrecioScreen> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mensaje)));
       _busquedaController.clear();
       _precioController.clear();
+      _marcaController.clear();
+      _caracteristicasController.clear();
     }
   }
 
@@ -57,8 +63,8 @@ class _ReportarPrecioScreenState extends State<ReportarPrecioScreen> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: Container(
-          decoration: const BoxDecoration(
-            border: Border(bottom: BorderSide(color: Color(0x26FFFFFF), width: 0.5)),
+          decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: context.colorAppBarBorder, width: 0.5)),
           ),
           child: AppBar(title: const Text('Reportar precio')),
         ),
@@ -86,6 +92,8 @@ class _ReportarPrecioScreenState extends State<ReportarPrecioScreen> {
       case 1:
         return _PasoPrecioYFoto(
           controller: _precioController,
+          marcaController: _marcaController,
+          caracteristicasController: _caracteristicasController,
           onElegirFoto: _elegirFoto,
         );
       default:
@@ -112,9 +120,9 @@ class _IndicadorPasos extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 4),
             padding: const EdgeInsets.symmetric(vertical: 8),
             decoration: BoxDecoration(
-              color: activo ? AppColors.tealGlass : AppColors.glassWhite,
+              color: activo ? AppColors.tealGlass : context.colorChipUnselectedBg,
               border: Border.all(
-                color: activo ? const Color(0x991D9E75) : AppColors.glassBorder,
+                color: activo ? const Color(0x991D9E75) : context.colorCardBorder,
                 width: 0.5,
               ),
               borderRadius: BorderRadius.circular(10),
@@ -123,7 +131,7 @@ class _IndicadorPasos extends StatelessWidget {
               titulos[index],
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: activo ? Colors.white : AppColors.textSecondary,
+                color: activo ? Colors.white : context.colorChipUnselectedText,
                 fontSize: 11,
                 fontWeight: activo ? FontWeight.w600 : FontWeight.normal,
               ),
@@ -151,7 +159,7 @@ class _PasoMaterial extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: TextField(
             controller: controller,
-            style: const TextStyle(color: Colors.white),
+            style: TextStyle(color: context.colorOnSurface),
             decoration: const InputDecoration(
               hintText: '¿Qué material vas a reportar?',
               prefixIcon: Icon(Icons.search),
@@ -197,11 +205,11 @@ class _PasoMaterial extends StatelessWidget {
                                   children: [
                                     Text(
                                       material.nombre,
-                                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                                      style: TextStyle(color: context.colorOnSurface, fontWeight: FontWeight.w600),
                                     ),
                                     Text(
                                       '${material.categoria} · ${material.unidadMedida}',
-                                      style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                                      style: TextStyle(color: context.colorOnSurfaceDim, fontSize: 12),
                                     ),
                                   ],
                                 ),
@@ -220,12 +228,19 @@ class _PasoMaterial extends StatelessWidget {
   }
 }
 
-// --- Paso 2: precio + foto ---
+// --- Paso 2: precio + marca + foto ---
 class _PasoPrecioYFoto extends StatelessWidget {
   final TextEditingController controller;
+  final TextEditingController marcaController;
+  final TextEditingController caracteristicasController;
   final Future<void> Function(ImageSource source) onElegirFoto;
 
-  const _PasoPrecioYFoto({required this.controller, required this.onElegirFoto});
+  const _PasoPrecioYFoto({
+    required this.controller,
+    required this.marcaController,
+    required this.caracteristicasController,
+    required this.onElegirFoto,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -238,16 +253,37 @@ class _PasoPrecioYFoto extends StatelessWidget {
         children: [
           Text(
             'Reportando: ${provider.materialSeleccionado?.nombre ?? ''}',
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+            style: TextStyle(color: context.colorOnSurface, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 16),
           TextField(
             controller: controller,
-            style: const TextStyle(color: Colors.white),
+            style: TextStyle(color: context.colorOnSurface),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             decoration: const InputDecoration(
               labelText: 'Precio (USD)',
               prefixIcon: Icon(Icons.attach_money),
+            ),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: marcaController,
+            style: TextStyle(color: context.colorOnSurface),
+            decoration: const InputDecoration(
+              labelText: 'Marca *',
+              hintText: 'Ej: Holcim, Condor, Sika',
+              prefixIcon: Icon(Icons.label_outline),
+            ),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: caracteristicasController,
+            style: TextStyle(color: context.colorOnSurface),
+            maxLines: 2,
+            decoration: const InputDecoration(
+              labelText: 'Características (opcional)',
+              hintText: 'Ej: resistencia 42.5 MPa, saco 50kg',
+              prefixIcon: Icon(Icons.info_outline),
             ),
           ),
           const SizedBox(height: 20),
@@ -262,31 +298,29 @@ class _PasoPrecioYFoto extends StatelessWidget {
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: () => onElegirFoto(ImageSource.camera),
-                  icon: const Icon(Icons.camera_alt_outlined, color: Colors.white),
-                  label: const Text('Cámara', style: TextStyle(color: Colors.white)),
+                  icon: const Icon(Icons.camera_alt_outlined),
+                  label: const Text('Cámara'),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: () => onElegirFoto(ImageSource.gallery),
-                  icon: const Icon(Icons.photo_library_outlined, color: Colors.white),
-                  label: const Text('Galería', style: TextStyle(color: Colors.white)),
+                  icon: const Icon(Icons.photo_library_outlined),
+                  label: const Text('Galería'),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 28),
-          // AnimatedBuilder escucha "controller" (un TextEditingController
-          // también es un Listenable) y reconstruye SOLO este Row cuando
-          // el texto cambia. Así el botón "Siguiente" se habilita o
-          // deshabilita en vivo, sin envolver toda la pantalla en setState.
           AnimatedBuilder(
-            animation: controller,
+            animation: Listenable.merge([controller, marcaController]),
             builder: (context, _) {
               final precioValido = double.tryParse(controller.text.replaceAll(',', '.'));
-              final puedeContinuar =
-                  precioValido != null && precioValido > 0 && provider.fotoBytes != null;
+              final puedeContinuar = precioValido != null &&
+                  precioValido > 0 &&
+                  marcaController.text.trim().isNotEmpty &&
+                  provider.fotoBytes != null;
 
               return Row(
                 children: [
@@ -299,8 +333,13 @@ class _PasoPrecioYFoto extends StatelessWidget {
                     label: 'Siguiente',
                     onPressed: puedeContinuar
                         ? () {
-                            context.read<ReporteProvider>().setPrecio(precioValido);
-                            context.read<ReporteProvider>().avanzarAFerreteria();
+                            final rp = context.read<ReporteProvider>();
+                            rp.setPrecio(precioValido);
+                            rp.setMarcaYCaracteristicas(
+                              marcaController.text.trim(),
+                              caracteristicasController.text,
+                            );
+                            rp.avanzarAFerreteria();
                           }
                         : null,
                   ),
@@ -369,11 +408,11 @@ class _PasoFerreteria extends StatelessWidget {
                             children: [
                               Text(
                                 ferreteria.nombre,
-                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                                style: TextStyle(color: context.colorOnSurface, fontWeight: FontWeight.w600),
                               ),
                               Text(
                                 '${ferreteria.sector} · ${ferreteria.direccion}',
-                                style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                                style: TextStyle(color: context.colorOnSurfaceDim, fontSize: 12),
                               ),
                             ],
                           ),
@@ -484,13 +523,13 @@ class _DialogoNuevaFerreteriaState extends State<_DialogoNuevaFerreteria> {
         children: [
           TextField(
             controller: _nombreController,
-            style: const TextStyle(color: Colors.white),
+            style: TextStyle(color: context.colorOnSurface),
             decoration: const InputDecoration(labelText: 'Nombre'),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _direccionController,
-            style: const TextStyle(color: Colors.white),
+            style: TextStyle(color: context.colorOnSurface),
             decoration: const InputDecoration(labelText: 'Dirección'),
           ),
           const SizedBox(height: 12),
@@ -501,8 +540,10 @@ class _DialogoNuevaFerreteriaState extends State<_DialogoNuevaFerreteria> {
               return ChoiceChip(
                 label: Text(sector),
                 selected: elegido,
-                labelStyle: TextStyle(color: elegido ? Colors.white : const Color(0x80FFFFFF)),
-                backgroundColor: const Color(0x0DFFFFFF),
+                labelStyle: TextStyle(
+                  color: elegido ? Colors.white : context.colorChipUnselectedText,
+                ),
+                backgroundColor: context.colorChipUnselectedBg,
                 selectedColor: AppColors.tealGlass,
                 onSelected: (_) => setState(() => _sectorElegido = sector),
               );
@@ -591,13 +632,13 @@ class _DialogoNuevoMaterialState extends State<_DialogoNuevoMaterial> {
         children: [
           TextField(
             controller: _nombreController,
-            style: const TextStyle(color: Colors.white),
+            style: TextStyle(color: context.colorOnSurface),
             decoration: const InputDecoration(labelText: 'Nombre'),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _categoriaController,
-            style: const TextStyle(color: Colors.white),
+            style: TextStyle(color: context.colorOnSurface),
             decoration: const InputDecoration(
               labelText: 'Categoría',
               hintText: 'Ej: Cemento, Pintura, Sellantes',
@@ -606,7 +647,7 @@ class _DialogoNuevoMaterialState extends State<_DialogoNuevoMaterial> {
           const SizedBox(height: 12),
           TextField(
             controller: _unidadController,
-            style: const TextStyle(color: Colors.white),
+            style: TextStyle(color: context.colorOnSurface),
             decoration: const InputDecoration(
               labelText: 'Unidad de medida',
               hintText: 'Ej: saco 50kg, galón, tubo 280ml',

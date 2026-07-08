@@ -16,8 +16,10 @@ class ReporteProvider extends ChangeNotifier {
   bool buscandoMateriales = false;
   MaterialResultado? materialSeleccionado;
 
-  // --- Paso 2: precio + foto ---
+  // --- Paso 2: precio + foto + marca ---
   double? precio;
+  String? marca;
+  String? caracteristicas;
   Uint8List? fotoBytes;
   String? fotoNombre;
 
@@ -78,6 +80,11 @@ class ReporteProvider extends ChangeNotifier {
 
   void setPrecio(double valor) {
     precio = valor;
+  }
+
+  void setMarcaYCaracteristicas(String nuevaMarca, String? nuevasCaracteristicas) {
+    marca = nuevaMarca;
+    caracteristicas = nuevasCaracteristicas?.trim().isEmpty == true ? null : nuevasCaracteristicas?.trim();
   }
 
   // Pide la lista de ferreterías la primera vez que se entra al paso 3.
@@ -153,6 +160,8 @@ class ReporteProvider extends ChangeNotifier {
         ferreteriaId: ferreteriaSeleccionada!.id,
         precio: precio!,
         fotoUrl: fotoUrl,
+        marca: marca!,
+        caracteristicas: caracteristicas,
       );
 
       _reiniciar();
@@ -174,6 +183,8 @@ class ReporteProvider extends ChangeNotifier {
     pasoActual = 0;
     materialSeleccionado = null;
     precio = null;
+    marca = null;
+    caracteristicas = null;
     fotoBytes = null;
     fotoNombre = null;
     ferreteriaSeleccionada = null;

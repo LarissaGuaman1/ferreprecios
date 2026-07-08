@@ -45,6 +45,11 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>FerrePrecios necesita acceder a la cámara para tomar la foto de evidencia de un precio.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

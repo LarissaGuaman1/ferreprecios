@@ -3,9 +3,11 @@ import 'package:provider/provider.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_components.dart';
+import '../../../core/theme/theme_provider.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../perfil/presentation/perfil_screen.dart';
+import '../../ferreterias/presentation/mapa_ferreterias_screen.dart';
 import '../../reportes/presentation/reportar_precio_screen.dart';
 import '../providers/material_provider.dart';
 import 'detalle_material_screen.dart';
@@ -58,7 +60,7 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
       context: context,
       applicationName: 'FerrePrecios Quito',
       applicationVersion: '1.0.0',
-      applicationIcon: const Icon(Icons.storefront, color: AppColors.primary),
+      applicationIcon: Image.asset('assets/images/logo.png', height: 56),
       children: const [
         SizedBox(height: 12),
         Text('Comparación colaborativa de precios de materiales de construcción en Quito.'),
@@ -77,19 +79,18 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: Container(
-          decoration: const BoxDecoration(
-            border: Border(bottom: BorderSide(color: Color(0x26FFFFFF), width: 0.5)),
+          decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: context.colorAppBarBorder, width: 0.5)),
           ),
           child: AppBar(title: const Text('Buscar materiales')),
         ),
       ),
       drawer: Drawer(
-        backgroundColor: const Color(0xFF0D1F16),
+        backgroundColor: context.colorSurfaceBg,
         shape: const RoundedRectangleBorder(),
         child: DecoratedBox(
-          // Borde derecho de 0.5px blanco 15%, pedido en la spec.
-          decoration: const BoxDecoration(
-            border: Border(right: BorderSide(color: Color(0x26FFFFFF), width: 0.5)),
+          decoration: BoxDecoration(
+            border: Border(right: BorderSide(color: context.colorAppBarBorder, width: 0.5)),
           ),
           child: SafeArea(
             child: Column(
@@ -101,35 +102,46 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
                 ),
                 const SizedBox(height: 8),
                 ListTile(
-                  leading: const Icon(Icons.home_outlined, color: Color(0xB3FFFFFF)),
-                  title: const Text('Inicio', style: TextStyle(color: Colors.white)),
+                  leading: Icon(Icons.home_outlined, color: context.colorIconSecondary),
+                  title: Text('Inicio', style: TextStyle(color: context.colorOnSurface)),
                   onTap: () => Navigator.pop(context),
                 ),
                 ListTile(
-                  leading: const Icon(Icons.add_a_photo_outlined, color: Color(0xB3FFFFFF)),
-                  title: const Text('Reportar precio', style: TextStyle(color: Colors.white)),
+                  leading: Icon(Icons.add_a_photo_outlined, color: context.colorIconSecondary),
+                  title: Text('Reportar precio', style: TextStyle(color: context.colorOnSurface)),
                   onTap: () => _irA(const ReportarPrecioScreen()),
                 ),
                 ListTile(
-                  leading: const Icon(Icons.map_outlined, color: Color(0xB3FFFFFF)),
-                  title: const Text('Mapa', style: TextStyle(color: Colors.white)),
-                  onTap: () => _irA(const ProximamenteScreen(titulo: 'Mapa', icono: Icons.map_outlined)),
+                  leading: Icon(Icons.map_outlined, color: context.colorIconSecondary),
+                  title: Text('Mapa', style: TextStyle(color: context.colorOnSurface)),
+                  onTap: () => _irA(const MapaFerreteriasScreen()),
                 ),
                 ListTile(
-                  leading: const Icon(Icons.person_outline, color: Color(0xB3FFFFFF)),
-                  title: const Text('Perfil', style: TextStyle(color: Colors.white)),
+                  leading: Icon(Icons.person_outline, color: context.colorIconSecondary),
+                  title: Text('Perfil', style: TextStyle(color: context.colorOnSurface)),
                   onTap: () => _irA(const PerfilScreen()),
                 ),
                 ListTile(
-                  leading: const Icon(Icons.info_outline, color: Color(0xB3FFFFFF)),
-                  title: const Text('Acerca de', style: TextStyle(color: Colors.white)),
+                  leading: Icon(Icons.info_outline, color: context.colorIconSecondary),
+                  title: Text('Acerca de', style: TextStyle(color: context.colorOnSurface)),
                   onTap: _mostrarAcercaDe,
                 ),
-                const Spacer(),
-                const Divider(color: Color(0x26FFFFFF), height: 1),
                 ListTile(
-                  leading: const Icon(Icons.logout, color: Color(0xB3FFFFFF)),
-                  title: const Text('Cerrar sesión', style: TextStyle(color: Colors.white)),
+                  leading: Icon(
+                    context.isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                    color: context.colorIconSecondary,
+                  ),
+                  title: Text(
+                    context.isDark ? 'Modo claro' : 'Modo oscuro',
+                    style: TextStyle(color: context.colorOnSurface),
+                  ),
+                  onTap: () => context.read<ThemeProvider>().toggle(),
+                ),
+                const Spacer(),
+                Divider(color: context.colorAppBarBorder, height: 1),
+                ListTile(
+                  leading: Icon(Icons.logout, color: context.colorIconSecondary),
+                  title: Text('Cerrar sesión', style: TextStyle(color: context.colorOnSurface)),
                   onTap: _cerrarSesion,
                 ),
                 const SizedBox(height: 8),
@@ -167,14 +179,14 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
                   return ChoiceChip(
                     label: Text(sector ?? 'Todos'),
                     labelStyle: TextStyle(
-                      color: seleccionado ? Colors.white : const Color(0x80FFFFFF),
+                      color: seleccionado ? Colors.white : context.colorChipUnselectedText,
                       fontWeight: seleccionado ? FontWeight.w600 : FontWeight.normal,
                     ),
                     selected: seleccionado,
-                    backgroundColor: const Color(0x0DFFFFFF),
+                    backgroundColor: context.colorChipUnselectedBg,
                     selectedColor: AppColors.tealGlass,
                     side: BorderSide(
-                      color: seleccionado ? const Color(0x991D9E75) : const Color(0x26FFFFFF),
+                      color: seleccionado ? const Color(0x991D9E75) : context.colorAppBarBorder,
                       width: 0.5,
                     ),
                     onSelected: (_) => context.read<MaterialProvider>().cambiarSector(sector),
@@ -301,11 +313,18 @@ class _CabeceraDrawer extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircleAvatar(
-            radius: 28,
-            backgroundColor: Colors.white,
-            backgroundImage: fotoUrl != null ? NetworkImage(fotoUrl!) : null,
-            child: fotoUrl == null ? const Icon(Icons.storefront, size: 28, color: AppColors.primary) : null,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CircleAvatar(
+                radius: 28,
+                backgroundColor: Colors.white,
+                backgroundImage: fotoUrl != null ? NetworkImage(fotoUrl!) : null,
+                child: fotoUrl == null ? const Icon(Icons.person, size: 28, color: AppColors.primary) : null,
+              ),
+              Image.asset('assets/images/logo.png', height: 44),
+            ],
           ),
           const SizedBox(height: 12),
           Text(

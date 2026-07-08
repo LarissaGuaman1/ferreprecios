@@ -31,20 +31,20 @@ class _PerfilScreenState extends State<PerfilScreen> {
     // dos formas de conseguir una foto: cámara o galería.
     final origen = await showModalBottomSheet<ImageSource>(
       context: context,
-      backgroundColor: const Color(0xFF0D1F16),
-      builder: (context) => SafeArea(
+      backgroundColor: context.colorSurfaceBg,
+      builder: (ctx) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.camera_alt_outlined, color: Colors.white),
-              title: const Text('Cámara', style: TextStyle(color: Colors.white)),
-              onTap: () => Navigator.pop(context, ImageSource.camera),
+              leading: Icon(Icons.camera_alt_outlined, color: ctx.colorOnSurface),
+              title: Text('Cámara', style: TextStyle(color: ctx.colorOnSurface)),
+              onTap: () => Navigator.pop(ctx, ImageSource.camera),
             ),
             ListTile(
-              leading: const Icon(Icons.photo_library_outlined, color: Colors.white),
-              title: const Text('Galería', style: TextStyle(color: Colors.white)),
-              onTap: () => Navigator.pop(context, ImageSource.gallery),
+              leading: Icon(Icons.photo_library_outlined, color: ctx.colorOnSurface),
+              title: Text('Galería', style: TextStyle(color: ctx.colorOnSurface)),
+              onTap: () => Navigator.pop(ctx, ImageSource.gallery),
             ),
           ],
         ),
@@ -91,8 +91,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: Container(
-          decoration: const BoxDecoration(
-            border: Border(bottom: BorderSide(color: Color(0x26FFFFFF), width: 0.5)),
+          decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: context.colorAppBarBorder, width: 0.5)),
           ),
           child: AppBar(title: const Text('Mi perfil')),
         ),
@@ -106,14 +106,13 @@ class _PerfilScreenState extends State<PerfilScreen> {
   }
 
   Widget _construirContenido(PerfilProvider provider) {
-    if (provider.isLoading && provider.perfil == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (provider.errorMessage != null && provider.perfil == null) {
-      return Center(
-        child: Text(provider.errorMessage!, style: const TextStyle(color: AppColors.error)),
-      );
+    if (provider.perfil == null) {
+      if (provider.errorMessage != null) {
+        return Center(
+          child: Text(provider.errorMessage!, style: const TextStyle(color: AppColors.error)),
+        );
+      }
+      return const Center(child: CircularProgressIndicator(color: AppColors.primary));
     }
 
     final perfil = provider.perfil!;
@@ -163,10 +162,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
               const SizedBox(height: 12),
               Text(
                 perfil.nombre,
-                style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(color: context.colorOnSurface, fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 2),
-              Text(perfil.email, style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+              Text(perfil.email, style: TextStyle(color: context.colorOnSurfaceDim, fontSize: 13)),
             ],
           ),
         ),
@@ -206,8 +205,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
         const SizedBox(height: 32),
         OutlinedButton.icon(
           onPressed: _cerrarSesion,
-          icon: const Icon(Icons.logout, color: Colors.white),
-          label: const Text('Cerrar sesión', style: TextStyle(color: Colors.white)),
+          icon: const Icon(Icons.logout),
+          label: const Text('Cerrar sesión'),
         ),
       ],
     );
@@ -240,10 +239,10 @@ class _TarjetaEstadistica extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             valor,
-            style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+            style: TextStyle(color: context.colorOnSurface, fontSize: 22, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 2),
-          Text(etiqueta, style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+          Text(etiqueta, style: TextStyle(color: context.colorOnSurfaceDim, fontSize: 12)),
         ],
       ),
     );

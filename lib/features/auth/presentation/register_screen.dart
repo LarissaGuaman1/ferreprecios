@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_components.dart';
-import '../../../core/navigation/main_shell.dart';
 import '../providers/auth_provider.dart';
 import 'widgets/auth_text_field.dart';
 
@@ -30,6 +29,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   // después de que el registro sea exitoso.
   Uint8List? _fotoBytes;
   String? _fotoNombre;
+  String _rol = 'comprador';
 
   @override
   void dispose() {
@@ -43,20 +43,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _elegirFoto() async {
     final origen = await showModalBottomSheet<ImageSource>(
       context: context,
-      backgroundColor: const Color(0xFF0D1F16),
-      builder: (context) => SafeArea(
+      backgroundColor: context.colorSurfaceBg,
+      builder: (ctx) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.camera_alt_outlined, color: Colors.white),
-              title: const Text('Cámara', style: TextStyle(color: Colors.white)),
-              onTap: () => Navigator.pop(context, ImageSource.camera),
+              leading: Icon(Icons.camera_alt_outlined, color: ctx.colorOnSurface),
+              title: Text('Cámara', style: TextStyle(color: ctx.colorOnSurface)),
+              onTap: () => Navigator.pop(ctx, ImageSource.camera),
             ),
             ListTile(
-              leading: const Icon(Icons.photo_library_outlined, color: Colors.white),
-              title: const Text('Galería', style: TextStyle(color: Colors.white)),
-              onTap: () => Navigator.pop(context, ImageSource.gallery),
+              leading: Icon(Icons.photo_library_outlined, color: ctx.colorOnSurface),
+              title: Text('Galería', style: TextStyle(color: ctx.colorOnSurface)),
+              onTap: () => Navigator.pop(ctx, ImageSource.gallery),
             ),
           ],
         ),
@@ -83,6 +83,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _nombreController.text.trim(),
       _emailController.text.trim(),
       _passwordController.text,
+      rol: _rol,
       fotoBytes: _fotoBytes,
       fotoNombre: _fotoNombre,
     );
@@ -90,10 +91,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (!mounted) return;
 
     if (exito) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const MainShell()),
-      );
+      // Limpiamos la sesión que el backend devolvió automáticamente:
+      // el usuario debe iniciar sesión de forma explícita.
+      context.read<AuthProvider>().logout();
+      if (!mounted) return;
+      // Pasamos "true" al login para que muestre el mensaje de éxito.
+      Navigator.pop(context, true);
     }
   }
 
@@ -105,10 +108,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: Container(
-          decoration: const BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: Color(0x26FFFFFF), width: 0.5),
-            ),
+          decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: context.colorAppBarBorder, width: 0.5)),
           ),
           child: AppBar(title: const Text('Crear cuenta')),
         ),
@@ -122,6 +123,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  // Selector de tipo de cuenta
+                  Text(
+                    'Tipo de cuenta',
+                    style: TextStyle(color: context.colorOnSurfaceDim, fontSize: 13),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _SelectorRol(
+                          icon: Icons.person_outline,
+                          titulo: 'Comprador',
+                          subtitulo: 'Busco los mejores precios',
+                          seleccionado: _rol == 'comprador',
+                          onTap: () => setState(() => _rol = 'comprador'),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _SelectorRol(
+                          icon: Icons.storefront_outlined,
+                          titulo: 'Ferretería',
+                          subtitulo: 'Gestiono mi tienda',
+                          seleccionado: _rol == 'ferreteria',
+                          onTap: () => setState(() => _rol = 'ferreteria'),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
                   Center(
                     child: GestureDetector(
                       onTap: _elegirFoto,
@@ -155,7 +186,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   Center(
                     child: Text(
                       _fotoBytes == null ? 'Agrega una foto (opcional)' : 'Foto seleccionada',
-                      style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                      style: TextStyle(color: context.colorOnSurfaceDim, fontSize: 12),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -225,6 +256,65 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SelectorRol extends StatelessWidget {
+  final IconData icon;
+  final String titulo;
+  final String subtitulo;
+  final bool seleccionado;
+  final VoidCallback onTap;
+
+  const _SelectorRol({
+    required this.icon,
+    required this.titulo,
+    required this.subtitulo,
+    required this.seleccionado,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
+        decoration: BoxDecoration(
+          color: seleccionado ? AppColors.tealGlass : context.colorCardBg,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: seleccionado ? AppColors.primary : context.colorCardBorder,
+            width: seleccionado ? 1.5 : 0.5,
+          ),
+        ),
+        child: Column(
+          children: [
+            Icon(
+              icon,
+              size: 28,
+              color: seleccionado ? AppColors.primary : context.colorOnSurfaceDim,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              titulo,
+              style: TextStyle(
+                color: seleccionado ? Colors.white : context.colorOnSurfaceDim,
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              subtitulo,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: context.colorOnSurfaceDim, fontSize: 11),
+            ),
+          ],
         ),
       ),
     );

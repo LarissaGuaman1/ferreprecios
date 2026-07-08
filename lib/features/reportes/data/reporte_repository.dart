@@ -69,13 +69,18 @@ class ReporteRepository {
     required String ferreteriaId,
     required double precio,
     required String fotoUrl,
+    required String marca,
+    String? caracteristicas,
   }) async {
-    final respuesta = await _api.post('/reportes', {
+    final body = {
       'materialId': materialId,
       'ferreteriaId': ferreteriaId,
       'precio': precio,
       'fotoUrl': fotoUrl,
-    });
+      'marca': marca,
+      if (caracteristicas != null) 'caracteristicas': caracteristicas,
+    };
+    final respuesta = await _api.post('/reportes', body);
     return respuesta['mensaje'] as String;
   }
 }

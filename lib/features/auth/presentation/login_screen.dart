@@ -54,11 +54,19 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _irARegistro() {
-    Navigator.push(
+  Future<void> _irARegistro() async {
+    final cuentaCreada = await Navigator.push<bool>(
       context,
       MaterialPageRoute(builder: (_) => const RegisterScreen()),
     );
+    if (cuentaCreada == true && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('¡Cuenta creada! Ahora ingresa tu correo y contraseña.'),
+          backgroundColor: AppColors.primary,
+        ),
+      );
+    }
   }
 
   @override
@@ -80,19 +88,19 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     Image.asset('assets/images/logo.png', height: 160),
                     const SizedBox(height: 12),
-                    const Text(
+                    Text(
                       'FerrePrecios Quito',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: context.colorOnSurface,
                       ),
                     ),
-                    const Text(
+                    Text(
                       'Compara precios de materiales en Quito',
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: AppColors.textSecondary),
+                      style: TextStyle(color: context.colorOnSurfaceDim),
                     ),
                     const SizedBox(height: 32),
                     AuthTextField(

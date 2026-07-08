@@ -38,6 +38,9 @@ dependencies:
   provider: ^6.1.5+1
   image_picker: ^1.2.2
   http_parser: ^4.1.2
+  file_picker: ^8.1.2
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
 
 dev_dependencies:
   flutter_test:
@@ -57,12 +60,11 @@ dev_dependencies:
 # Configuración de flutter_launcher_icons: a partir de logo.png genera
 # automáticamente todos los tamaños de ícono que pide cada plataforma.
 flutter_launcher_icons:
-  image_path: "assets/images/logo.png"
   android: true
   ios: true
-  # El logo tiene fondo transparente en las esquinas; iOS no permite
-  # transparencia en su ícono, así que esto la rellena de un color sólido.
+  image_path: "assets/images/logo.png"
   remove_alpha_ios: true
+  min_sdk_android: 21
   web:
     generate: true
     image_path: "assets/images/logo.png"

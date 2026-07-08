@@ -3,28 +3,14 @@ import 'package:flutter/material.dart';
 import 'app_colors.dart';
 import 'app_text_styles.dart';
 
-// Construye el ThemeData que main.dart le pasa a MaterialApp.
-// Aquí es donde AppColors y AppTextStyles se convierten en el estilo
-// real que Flutter aplica a cada widget de la app.
 class AppTheme {
   AppTheme._();
 
-  static ThemeData get lightTheme {
+  static ThemeData get darkTheme {
     return ThemeData(
-      // Activa los componentes visuales más recientes de Flutter
-      // (Material 3), que es el estándar actual.
       useMaterial3: true,
-
-      // Color de fondo de todas las pantallas (Scaffold) que no
-      // definan su propio color de fondo. El gradiente real lo pinta
-      // AppBackground (en app_components.dart); esto es solo el
-      // respaldo sólido para el primer frame antes de que pinte.
+      brightness: Brightness.dark,
       scaffoldBackgroundColor: AppColors.bgGrad2,
-
-      // ColorScheme.dark (en vez de .light): así, cualquier widget de
-      // Flutter que dibuje texto/íconos SIN un color explícito (usando
-      // "onSurface" por defecto) sale blanco, no negro. Como todo el
-      // fondo de la app ahora es oscuro, esto evita "texto invisible".
       colorScheme: ColorScheme.dark(
         primary: AppColors.primary,
         secondary: AppColors.priceColor,
@@ -35,9 +21,6 @@ class AppTheme {
         onSurface: Colors.white,
         onError: Colors.white,
       ),
-
-      // Estilo por defecto de todos los AppBar: transparente para que
-      // se vea el gradiente de fondo detrás, con texto/íconos blancos.
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
@@ -45,23 +28,21 @@ class AppTheme {
         titleTextStyle: AppTextStyles.heading2.copyWith(color: Colors.white),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-
-      // Estilo por defecto de los botones rellenos (ElevatedButton).
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
-          foregroundColor: AppColors.surface,
+          foregroundColor: Colors.white,
           textStyle: AppTextStyles.button,
           padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
-
-      // Estilo "vidrio" para los campos de texto (buscador, login,
-      // registro): fondo blanco casi transparente, borde sutil de
-      // 0.5px, placeholder e ícono también translúcidos.
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: Colors.white,
+          side: const BorderSide(color: Colors.white54),
+        ),
+      ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: const Color(0x1AFFFFFF),
@@ -81,9 +62,6 @@ class AppTheme {
           borderSide: const BorderSide(color: AppColors.primary, width: 1),
         ),
       ),
-
-      // Estilo "vidrio" para las tarjetas (Card de Flutter, por si se
-      // usa directo en algún lugar fuera de nuestro GlassCard propio).
       cardTheme: CardThemeData(
         elevation: 0,
         color: AppColors.glassWhite,
@@ -92,15 +70,111 @@ class AppTheme {
           side: const BorderSide(color: AppColors.glassBorder, width: 0.5),
         ),
       ),
-
-      // Conecta nuestros estilos a los "slots" de texto que Flutter
-      // usa por nombre en distintos widgets.
+      dialogTheme: const DialogThemeData(
+        backgroundColor: Color(0xFF1A2A4A),
+        titleTextStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600),
+        contentTextStyle: TextStyle(color: Color(0x73FFFFFF)),
+      ),
       textTheme: TextTheme(
         titleLarge: AppTextStyles.heading1,
         titleMedium: AppTextStyles.heading2,
         bodyLarge: AppTextStyles.body,
         bodyMedium: AppTextStyles.bodySecondary,
         labelSmall: AppTextStyles.caption,
+      ),
+    );
+  }
+
+  static ThemeData get lightTheme {
+    const textPrimary = Color(0xFF1B3025);
+    const textSecondary = Color(0xFF5A7A6C);
+    const surfaceBg = Color(0xFFF5F9F7);
+
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.light,
+      scaffoldBackgroundColor: surfaceBg,
+      colorScheme: ColorScheme.light(
+        primary: AppColors.primary,
+        secondary: AppColors.priceColor,
+        surface: surfaceBg,
+        error: AppColors.error,
+        onPrimary: Colors.white,
+        onSecondary: Colors.white,
+        onSurface: textPrimary,
+        onError: Colors.white,
+      ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: Colors.white,
+        foregroundColor: textPrimary,
+        elevation: 0,
+        titleTextStyle: AppTextStyles.heading2.copyWith(color: textPrimary),
+        iconTheme: const IconThemeData(color: textPrimary),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
+          textStyle: AppTextStyles.button,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.primary,
+          side: const BorderSide(color: AppColors.primary),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(foregroundColor: AppColors.primary),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: const Color(0xFFF2FAF7),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        hintStyle: const TextStyle(color: textSecondary),
+        labelStyle: const TextStyle(color: textSecondary),
+        prefixIconColor: textSecondary,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Color(0xFFDCEDE6), width: 0.5),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Color(0xFFDCEDE6), width: 0.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: AppColors.primary, width: 1),
+        ),
+      ),
+      cardTheme: CardThemeData(
+        elevation: 2,
+        shadowColor: Colors.black12,
+        color: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+          side: const BorderSide(color: Color(0xFFDCEDE6), width: 0.5),
+        ),
+      ),
+      dialogTheme: const DialogThemeData(
+        backgroundColor: Colors.white,
+        titleTextStyle: TextStyle(color: textPrimary, fontSize: 20, fontWeight: FontWeight.w600),
+        contentTextStyle: TextStyle(color: textSecondary),
+      ),
+      drawerTheme: const DrawerThemeData(backgroundColor: Colors.white),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: Colors.white,
+        selectedItemColor: AppColors.primary,
+        unselectedItemColor: Color(0xFF9ABAAC),
+      ),
+      textTheme: TextTheme(
+        titleLarge: AppTextStyles.heading1.copyWith(color: textPrimary),
+        titleMedium: AppTextStyles.heading2.copyWith(color: textPrimary),
+        bodyLarge: AppTextStyles.body.copyWith(color: textPrimary),
+        bodyMedium: AppTextStyles.bodySecondary.copyWith(color: textSecondary),
+        labelSmall: AppTextStyles.caption.copyWith(color: textSecondary),
       ),
     );
   }

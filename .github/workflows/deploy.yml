@@ -1,0 +1,89 @@
+name: Deploy FerrePrecios Frontend
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v4
+
+      - name: Instalar Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.x'
+          channel: 'stable'
+
+      - name: Instalar dependencias de Flutter
+        run: flutter pub get
+
+      - name: Compilar aplicación web
+        run: flutter build web --release
+
+      - name: Login en GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_TOKEN }}
+
+      - name: Construir imagen de Docker
+        run: docker build -t ghcr.io/larissaguaman1/ferreprecios-frontend:latest .
+
+      - name: Publicar la imagen creada
+        run: docker push ghcr.io/larissaguaman1/ferreprecios-frontend:latest
+
+      - name: Mostrar variables no sensibles
+        run: |
+          echo "Probando conexión SSH con:"
+          echo "Host: ${{ secrets.VPS_HOST }}"
+          echo "Usuario: ${{ secrets.VPS_USER }}"
+          echo "Puerto: ${{ secrets.VPS_PORT }}"
+
+      - name: Probar SSH en el VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            echo "Conexión SSH correcta"
+            touch ferreprecios-web.txt
+
+      - name: Pasar archivos desde git al VPS
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: ${{ secrets.VPS_PORT }}
+          source: "stack.yml,Makefile"
+          target: "/home/${{ secrets.VPS_USER }}/ferreprecios-web-deploy"
+
+      - name: Desplegar stack en el VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            cd /home/${{ secrets.VPS_USER }}/ferreprecios-web-deploy
+
+            echo "==> Iniciando sesión en GHCR"
+            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            echo "==> Descargando la imagen del GHCR"
+            docker pull ghcr.io/larissaguaman1/ferreprecios-frontend:latest
+
+            echo "==> Desplegando stack..."
+            docker stack deploy -c stack.yml ferreprecios-web

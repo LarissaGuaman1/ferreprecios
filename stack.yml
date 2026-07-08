@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  ferreprecios-web:
+    image: ghcr.io/larissaguaman1/ferreprecios-frontend:latest
+    networks:
+      - traefik-public
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+      labels:
+        - "traefik.enable=true"
+
+        # HTTP
+        - "traefik.http.routers.ferreprecios-web.rule=Host(`ferreprecios.byronrm.com`)"
+        - "traefik.http.routers.ferreprecios-web.entrypoints=http"
+        - "traefik.http.routers.ferreprecios-web.middlewares=ferreprecios-web-https-redirect"
+
+        # Redirección a HTTPS
+        - "traefik.http.middlewares.ferreprecios-web-https-redirect.redirectscheme.scheme=https"
+
+        # HTTPS
+        - "traefik.http.routers.ferreprecios-web-secure.rule=Host(`ferreprecios.byronrm.com`)"
+        - "traefik.http.routers.ferreprecios-web-secure.entrypoints=https"
+        - "traefik.http.routers.ferreprecios-web-secure.tls=true"
+        - "traefik.http.routers.ferreprecios-web-secure.tls.certresolver=http"
+        - "traefik.http.routers.ferreprecios-web-secure.service=ferreprecios-web"
+
+        # Puerto interno de nginx
+        - "traefik.http.services.ferreprecios-web.loadbalancer.server.port=80"
+
+        # Red de Traefik
+        - "traefik.docker.network=traefik-public"
+
+networks:
+  traefik-public:
+    external: true
