@@ -86,7 +86,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Image.asset('assets/images/logo.png', height: 160),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(28),
+                      child: Image.asset('assets/images/logo.png', height: 160),
+                    ),
                     const SizedBox(height: 12),
                     Text(
                       'FerrePrecios Quito',

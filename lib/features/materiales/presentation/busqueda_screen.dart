@@ -60,7 +60,10 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
       context: context,
       applicationName: 'FerrePrecios Quito',
       applicationVersion: '1.0.0',
-      applicationIcon: Image.asset('assets/images/logo.png', height: 56),
+      applicationIcon: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Image.asset('assets/images/logo.png', height: 56),
+      ),
       children: const [
         SizedBox(height: 12),
         Text('Comparación colaborativa de precios de materiales de construcción en Quito.'),
@@ -323,7 +326,10 @@ class _CabeceraDrawer extends StatelessWidget {
                 backgroundImage: fotoUrl != null ? NetworkImage(fotoUrl!) : null,
                 child: fotoUrl == null ? const Icon(Icons.person, size: 28, color: AppColors.primary) : null,
               ),
-              Image.asset('assets/images/logo.png', height: 44),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.asset('assets/images/logo.png', height: 44),
+              ),
             ],
           ),
           const SizedBox(height: 12),
