@@ -30,7 +30,7 @@ class ApiService {
 
   // URL base de tu backend. Cuando despliegues en Railway, solo
   // cambias este valor (ej: "https://tu-app.up.railway.app/api").
-  static const String _baseUrl = 'http://46.224.5.181:8080/api';
+  static const String _baseUrl = 'https://api.ferreprecios.byronrm.com/api';
 
   // Token JWT del usuario logueado. Empieza en null (nadie ha iniciado
   // sesión). Es privado: nadie de afuera lo lee o modifica directamente,
