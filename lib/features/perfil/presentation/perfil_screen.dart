@@ -74,6 +74,39 @@ class _PerfilScreenState extends State<PerfilScreen> {
     }
   }
 
+  Future<void> _editarNombre(String nombreActual) async {
+    final controller = TextEditingController(text: nombreActual);
+    final nuevo = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Editar nombre'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(labelText: 'Nombre'),
+          autofocus: true,
+          textCapitalization: TextCapitalization.words,
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancelar')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+            child: const Text('Guardar'),
+          ),
+        ],
+      ),
+    );
+    if (nuevo == null || nuevo.isEmpty || !mounted) return;
+
+    final error = await context.read<PerfilProvider>().actualizarNombre(nuevo);
+    if (!mounted) return;
+
+    if (error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+      return;
+    }
+    context.read<AuthProvider>().actualizarNombre(nuevo);
+  }
+
   void _cerrarSesion() {
     context.read<AuthProvider>().logout();
     Navigator.pushAndRemoveUntil(
@@ -160,9 +193,22 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              Text(
-                perfil.nombre,
-                style: TextStyle(color: context.colorOnSurface, fontSize: 18, fontWeight: FontWeight.bold),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    perfil.nombre,
+                    style: TextStyle(color: context.colorOnSurface, fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(width: 4),
+                  IconButton(
+                    icon: const Icon(Icons.edit_outlined, size: 18),
+                    color: context.colorOnSurfaceDim,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    onPressed: provider.actualizandoNombre ? null : () => _editarNombre(perfil.nombre),
+                  ),
+                ],
               ),
               const SizedBox(height: 2),
               Text(perfil.email, style: TextStyle(color: context.colorOnSurfaceDim, fontSize: 13)),
@@ -193,11 +239,11 @@ class _PerfilScreenState extends State<PerfilScreen> {
         GlassCard(
           child: Row(
             children: [
-              const Icon(Icons.calendar_today_outlined, color: AppColors.textSecondary, size: 18),
+              Icon(Icons.calendar_today_outlined, color: context.colorOnSurfaceDim, size: 18),
               const SizedBox(width: 10),
               Text(
                 'Miembro desde ${_formatearFecha(perfil.miembroDesde)}',
-                style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                style: TextStyle(color: context.colorOnSurfaceDim, fontSize: 13),
               ),
             ],
           ),

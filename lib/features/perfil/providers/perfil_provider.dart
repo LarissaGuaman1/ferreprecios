@@ -14,6 +14,7 @@ class PerfilProvider extends ChangeNotifier {
   // Mientras se sube la foto nueva (para mostrar un loading SOLO en
   // el avatar, sin tapar el resto de la pantalla con un spinner).
   bool actualizandoFoto = false;
+  bool actualizandoNombre = false;
 
   Future<void> cargarPerfil() async {
     isLoading = true;
@@ -26,6 +27,23 @@ class PerfilProvider extends ChangeNotifier {
       errorMessage = 'No se pudo conectar al servidor';
     } finally {
       isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<String?> actualizarNombre(String nombre) async {
+    actualizandoNombre = true;
+    notifyListeners();
+    try {
+      final nuevoNombre = await _repository.actualizarNombre(nombre);
+      if (perfil != null) perfil = perfil!.copyWith(nombre: nuevoNombre);
+      return null;
+    } on ApiException catch (e) {
+      return e.message;
+    } catch (_) {
+      return 'No se pudo conectar al servidor';
+    } finally {
+      actualizandoNombre = false;
       notifyListeners();
     }
   }

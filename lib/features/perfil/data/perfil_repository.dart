@@ -24,4 +24,9 @@ class PerfilRepository {
     await _api.put('/usuarios/me/foto', {'fotoUrl': fotoUrl});
     return fotoUrl;
   }
+
+  Future<String> actualizarNombre(String nombre) async {
+    final respuesta = await _api.put('/usuarios/me/nombre', {'nombre': nombre});
+    return (respuesta as Map<String, dynamic>)['nombre'] as String;
+  }
 }

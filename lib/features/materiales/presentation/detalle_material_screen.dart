@@ -1,17 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../../core/services/api_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_components.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../data/material_repository.dart';
 import '../data/precio_reportado.dart';
 
-class DetalleMaterialScreen extends StatelessWidget {
+class DetalleMaterialScreen extends StatefulWidget {
   final String materialId;
   final String nombre;
 
   const DetalleMaterialScreen({super.key, required this.materialId, required this.nombre});
 
-  void _verFoto(BuildContext context, String url) {
+  @override
+  State<DetalleMaterialScreen> createState() => _DetalleMaterialScreenState();
+}
+
+class _DetalleMaterialScreenState extends State<DetalleMaterialScreen> {
+  late Future<List<PrecioReportado>> _futurePrecios;
+
+  @override
+  void initState() {
+    super.initState();
+    _futurePrecios = MaterialRepository().obtenerPrecios(widget.materialId);
+  }
+
+  void _recargar() {
+    setState(() {
+      _futurePrecios = MaterialRepository().obtenerPrecios(widget.materialId);
+    });
+  }
+
+  void _verFoto(String url) {
     showDialog(
       context: context,
       builder: (_) => Dialog(
@@ -42,9 +64,36 @@ class DetalleMaterialScreen extends StatelessWidget {
     );
   }
 
+  Future<void> _confirmarEliminar(String reporteId) async {
+    final confirmar = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Eliminar reporte'),
+        content: const Text('¿Seguro? Perderás los puntos ganados por este reporte.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Eliminar', style: TextStyle(color: AppColors.error)),
+          ),
+        ],
+      ),
+    );
+    if (confirmar != true || !mounted) return;
+
+    try {
+      await ApiService.instance.delete('/reportes/$reporteId');
+      if (!mounted) return;
+      _recargar();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final repository = MaterialRepository();
+    final usuarioId = context.read<AuthProvider>().usuarioId;
 
     return Scaffold(
       appBar: PreferredSize(
@@ -53,12 +102,12 @@ class DetalleMaterialScreen extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border(bottom: BorderSide(color: context.colorAppBarBorder, width: 0.5)),
           ),
-          child: AppBar(title: Text(nombre)),
+          child: AppBar(title: Text(widget.nombre)),
         ),
       ),
       body: AppBackground(
         child: FutureBuilder<List<PrecioReportado>>(
-          future: repository.obtenerPrecios(materialId),
+          future: _futurePrecios,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -72,10 +121,10 @@ class DetalleMaterialScreen extends StatelessWidget {
 
             final precios = snapshot.data!;
             if (precios.isEmpty) {
-              return const Center(
+              return Center(
                 child: Text(
                   'Nadie ha reportado un precio para este material todavía',
-                  style: TextStyle(color: AppColors.textSecondary),
+                  style: TextStyle(color: context.colorOnSurfaceDim),
                   textAlign: TextAlign.center,
                 ),
               );
@@ -87,6 +136,7 @@ class DetalleMaterialScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 final precio = precios[index];
                 final esElMasBarato = index == 0;
+                final esMio = usuarioId != null && precio.usuarioId == usuarioId;
 
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 12),
@@ -105,7 +155,7 @@ class DetalleMaterialScreen extends StatelessWidget {
                                 padding: const EdgeInsets.only(top: 2),
                                 child: Icon(
                                   esElMasBarato ? Icons.emoji_events : Icons.storefront,
-                                  color: esElMasBarato ? AppColors.priceColor : const Color(0x99FFFFFF),
+                                  color: esElMasBarato ? AppColors.priceColor : context.colorOnSurfaceDim,
                                 ),
                               ),
                               const SizedBox(width: 12),
@@ -144,7 +194,7 @@ class DetalleMaterialScreen extends StatelessWidget {
                                       const SizedBox(height: 2),
                                       Text(
                                         precio.caracteristicas!,
-                                        style: const TextStyle(color: AppColors.textSecondary, fontSize: 11),
+                                        style: TextStyle(color: context.colorOnSurfaceDim, fontSize: 11),
                                       ),
                                     ],
                                     const SizedBox(height: 5),
@@ -158,8 +208,8 @@ class DetalleMaterialScreen extends StatelessWidget {
                                           ),
                                           child: Text(
                                             precio.ferreteriaSector,
-                                            style: const TextStyle(
-                                              color: Color(0x59FFFFFF),
+                                            style: TextStyle(
+                                              color: context.colorOnSurfaceDim,
                                               fontSize: 11,
                                               fontWeight: FontWeight.w600,
                                             ),
@@ -173,20 +223,33 @@ class DetalleMaterialScreen extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              Text(
-                                '\$${precio.valor.toStringAsFixed(2)}',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 22,
-                                  color: esElMasBarato ? AppColors.priceColor : context.colorOnSurface,
-                                ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    '\$${precio.valor.toStringAsFixed(2)}',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 22,
+                                      color: esElMasBarato ? AppColors.priceColor : context.colorOnSurface,
+                                    ),
+                                  ),
+                                  if (esMio)
+                                    IconButton(
+                                      icon: const Icon(Icons.delete_outline, size: 18, color: AppColors.error),
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(),
+                                      tooltip: 'Eliminar mi reporte',
+                                      onPressed: () => _confirmarEliminar(precio.id),
+                                    ),
+                                ],
                               ),
                             ],
                           ),
                         ),
                         if (precio.fotoUrl != null)
                           GestureDetector(
-                            onTap: () => _verFoto(context, precio.fotoUrl!),
+                            onTap: () => _verFoto(precio.fotoUrl!),
                             child: ClipRRect(
                               borderRadius: const BorderRadius.vertical(bottom: Radius.circular(14)),
                               child: Image.network(

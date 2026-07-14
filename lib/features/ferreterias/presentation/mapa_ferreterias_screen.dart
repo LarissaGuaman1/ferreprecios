@@ -264,12 +264,12 @@ class _Fila extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 13, color: AppColors.textSecondary),
+          Icon(icon, size: 13, color: context.colorOnSurfaceDim),
           const SizedBox(width: 6),
           Expanded(
             child: Text(
               texto,
-              style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+              style: TextStyle(color: context.colorOnSurfaceDim, fontSize: 12),
             ),
           ),
         ],

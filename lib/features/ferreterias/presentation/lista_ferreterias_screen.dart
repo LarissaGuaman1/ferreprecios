@@ -81,7 +81,7 @@ class _ListaFerreteriasScreenState extends State<ListaFerreteriasScreen> {
                     )
                   else
                     IconButton(
-                      icon: const Icon(Icons.refresh, color: AppColors.textSecondary),
+                      icon: Icon(Icons.refresh, color: context.colorOnSurfaceDim),
                       onPressed: () => context.read<ListaFerreteriasProvider>().cargar(),
                     ),
                 ],
@@ -123,14 +123,14 @@ class _ListaFerreteriasScreenState extends State<ListaFerreteriasScreen> {
                   ? Center(
                       child: Text(
                         provider.errorMessage!,
-                        style: const TextStyle(color: AppColors.textSecondary),
+                        style: TextStyle(color: context.colorOnSurfaceDim),
                       ),
                     )
                   : filtradas.isEmpty && !provider.isLoading
-                      ? const Center(
+                      ? Center(
                           child: Text(
                             'No se encontraron ferreterías',
-                            style: TextStyle(color: AppColors.textSecondary),
+                            style: TextStyle(color: context.colorOnSurfaceDim),
                           ),
                         )
                       : ListView.separated(
@@ -225,7 +225,7 @@ class _TarjetaFerreteria extends StatelessWidget {
                   const SizedBox(height: 6),
                   Text(
                     ferreteria.descripcion!,
-                    style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                    style: TextStyle(color: context.colorOnSurfaceDim, fontSize: 13),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -251,7 +251,7 @@ class _PlaceholderFoto extends StatelessWidget {
         color: AppColors.glassWhite,
         borderRadius: BorderRadius.vertical(top: Radius.circular(14)),
       ),
-      child: const Icon(Icons.store_outlined, size: 40, color: AppColors.textSecondary),
+      child: Icon(Icons.store_outlined, size: 40, color: context.colorOnSurfaceDim),
     );
   }
 }
@@ -269,12 +269,12 @@ class _InfoFila extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 14, color: AppColors.textSecondary),
+          Icon(icon, size: 14, color: context.colorOnSurfaceDim),
           const SizedBox(width: 6),
           Expanded(
             child: Text(
               texto,
-              style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+              style: TextStyle(color: context.colorOnSurfaceDim, fontSize: 13),
             ),
           ),
         ],

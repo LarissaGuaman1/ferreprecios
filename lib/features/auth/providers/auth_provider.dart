@@ -19,6 +19,7 @@ class AuthProvider extends ChangeNotifier {
   bool isAuthenticated = false;
 
   // Datos básicos del usuario logueado, para mostrarlos en el Perfil.
+  String? usuarioId;
   String? nombreUsuario;
   String? emailUsuario;
   String? fotoUrlUsuario;
@@ -118,6 +119,7 @@ class AuthProvider extends ChangeNotifier {
   void logout() {
     ApiService.instance.clearToken();
     isAuthenticated = false;
+    usuarioId = null;
     nombreUsuario = null;
     emailUsuario = null;
     fotoUrlUsuario = null;
@@ -132,6 +134,11 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void actualizarNombre(String nombre) {
+    nombreUsuario = nombre;
+    notifyListeners();
+  }
+
   // Lógica compartida entre login y register: guarda el token en
   // ApiService (para que viaje automático en futuras peticiones) y
   // los datos del usuario en este provider.
@@ -140,6 +147,7 @@ class AuthProvider extends ChangeNotifier {
     final usuario = respuesta['usuario'] as Map<String, dynamic>;
 
     ApiService.instance.setToken(token);
+    usuarioId = usuario['id'] as String?;
     nombreUsuario = usuario['nombre'] as String?;
     emailUsuario = usuario['email'] as String?;
     fotoUrlUsuario = usuario['fotoUrl'] as String?;

@@ -160,7 +160,7 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
               padding: const EdgeInsets.all(16),
               child: TextField(
                 controller: _searchController,
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: context.colorOnSurface),
                 decoration: const InputDecoration(
                   hintText: 'Ej: cemento, varilla, pintura...',
                   prefixIcon: Icon(Icons.search),
@@ -217,8 +217,8 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
     }
 
     if (materialProvider.resultados.isEmpty) {
-      return const Center(
-        child: Text('No se encontraron materiales', style: TextStyle(color: AppColors.textSecondary)),
+      return Center(
+        child: Text('No se encontraron materiales', style: TextStyle(color: context.colorOnSurfaceDim)),
       );
     }
 
@@ -249,8 +249,8 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
                       children: [
                         Text(
                           material.nombre,
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: context.colorOnSurface,
                             fontWeight: FontWeight.w600,
                             fontSize: 15,
                           ),
@@ -258,13 +258,13 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
                         const SizedBox(height: 4),
                         Text(
                           '${material.categoria} · ${material.unidadMedida}',
-                          style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                          style: TextStyle(color: context.colorOnSurfaceDim, fontSize: 12),
                         ),
                       ],
                     ),
                   ),
                   material.mejorPrecio == null
-                      ? const Text('Sin precios', style: TextStyle(color: AppColors.textSecondary))
+                      ? Text('Sin precios', style: TextStyle(color: context.colorOnSurfaceDim))
                       : Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.end,

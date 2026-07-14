@@ -185,13 +185,13 @@ class _MiFerreteriaScreenState extends State<MiFerreteriaScreen> {
                     padding: const EdgeInsets.only(top: 3),
                     child: Text(
                       '• Fila ${e['fila']}: ${e['motivo']}',
-                      style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                      style: TextStyle(color: ctx.colorOnSurfaceDim, fontSize: 12),
                     ),
                   )),
               if (errores.length > 5)
                 Text(
                   '  ...y ${errores.length - 5} más',
-                  style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                  style: TextStyle(color: ctx.colorOnSurfaceDim, fontSize: 12),
                 ),
             ],
           ],
@@ -291,12 +291,12 @@ class _MiFerreteriaScreenState extends State<MiFerreteriaScreen> {
                         ),
                       ),
                       if (provider.ferreteria == null)
-                        const Padding(
-                          padding: EdgeInsets.only(top: 8),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
                           child: Center(
                             child: Text(
                               'Guarda los datos primero para agregar foto',
-                              style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                              style: TextStyle(color: context.colorOnSurfaceDim, fontSize: 12),
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -404,12 +404,12 @@ class _MiFerreteriaScreenState extends State<MiFerreteriaScreen> {
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(color: AppColors.glassBorder, width: 0.5),
                           ),
-                          child: const Column(
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 'Formato del archivo:',
-                                style: TextStyle(color: AppColors.textSecondary, fontSize: 11, fontWeight: FontWeight.bold),
+                                style: TextStyle(color: context.colorOnSurfaceDim, fontSize: 11, fontWeight: FontWeight.bold),
                               ),
                               SizedBox(height: 6),
                               Text(

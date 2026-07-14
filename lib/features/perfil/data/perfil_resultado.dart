@@ -30,9 +30,9 @@ class PerfilResultado {
 
   // Para actualizar solo la foto sin tener que rehacer todo el objeto
   // desde el backend (la usamos justo después de subir una foto nueva).
-  PerfilResultado copyWith({String? fotoUrl}) {
+  PerfilResultado copyWith({String? fotoUrl, String? nombre}) {
     return PerfilResultado(
-      nombre: nombre,
+      nombre: nombre ?? this.nombre,
       email: email,
       puntos: puntos,
       fotoUrl: fotoUrl ?? this.fotoUrl,

@@ -214,7 +214,7 @@ class _PasoMaterial extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                              const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+                              Icon(Icons.chevron_right, color: context.colorOnSurfaceDim),
                             ],
                           ),
                         ),

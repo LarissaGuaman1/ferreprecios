@@ -80,6 +80,14 @@ class ApiService {
     return _procesarRespuesta(response);
   }
 
+  Future<dynamic> delete(String endpoint) async {
+    final response = await http.delete(
+      Uri.parse('$_baseUrl$endpoint'),
+      headers: _headers,
+    );
+    return _procesarRespuesta(response);
+  }
+
   Future<dynamic> put(String endpoint, Map<String, dynamic> body) async {
     final response = await http.put(
       Uri.parse('$_baseUrl$endpoint'),

@@ -179,11 +179,11 @@ class ProximamenteScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icono, size: 48, color: AppColors.textSecondary),
+              Icon(icono, size: 48, color: context.colorOnSurfaceDim),
               const SizedBox(height: 12),
               Text(
                 '$titulo — Próximamente',
-                style: const TextStyle(color: AppColors.textSecondary, fontSize: 15),
+                style: TextStyle(color: context.colorOnSurfaceDim, fontSize: 15),
               ),
             ],
           ),

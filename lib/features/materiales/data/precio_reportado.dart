@@ -1,5 +1,6 @@
 class PrecioReportado {
   final String id;
+  final String? usuarioId;
   final double valor;
   final int confirmaciones;
   final String estado;
@@ -12,6 +13,7 @@ class PrecioReportado {
 
   PrecioReportado({
     required this.id,
+    this.usuarioId,
     required this.valor,
     required this.confirmaciones,
     required this.estado,
@@ -28,6 +30,7 @@ class PrecioReportado {
 
     return PrecioReportado(
       id: json['id'] as String,
+      usuarioId: json['usuarioId'] as String?,
       valor: (json['valor'] as num).toDouble(),
       confirmaciones: json['confirmaciones'] as int,
       estado: json['estado'] as String,
