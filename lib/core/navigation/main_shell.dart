@@ -5,6 +5,7 @@ import '../theme/app_colors.dart';
 import '../../features/auth/providers/auth_provider.dart';
 import '../../features/materiales/presentation/busqueda_screen.dart';
 import '../../features/perfil/presentation/perfil_screen.dart';
+import '../../features/perfil/providers/perfil_provider.dart';
 import '../../features/reportes/presentation/reportar_precio_screen.dart';
 import '../../features/ferreterias/presentation/lista_ferreterias_screen.dart';
 import '../../features/ferreterias/presentation/mi_ferreteria_screen.dart';
@@ -41,7 +42,12 @@ class _MainShellState extends State<MainShell> {
         ),
         child: BottomNavigationBar(
           currentIndex: _indiceActual,
-          onTap: (index) => setState(() => _indiceActual = index),
+          onTap: (index) {
+            setState(() => _indiceActual = index);
+            if (index == 3) {
+              context.read<PerfilProvider>().cargarPerfil();
+            }
+          },
           backgroundColor: Colors.transparent,
           selectedItemColor: AppColors.primary,
           unselectedItemColor: context.colorNavUnselected,
