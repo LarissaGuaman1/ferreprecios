@@ -16,7 +16,7 @@ services:
         - "traefik.enable=true"
 
         # HTTP
-        - "traefik.http.routers.ferreprecios-web.rule=Host(`andrew.byronrm.com`)"
+        - "traefik.http.routers.ferreprecios-web.rule=Host(`ferreprecios.byronrm.com`)"
         - "traefik.http.routers.ferreprecios-web.entrypoints=http"
         - "traefik.http.routers.ferreprecios-web.middlewares=ferreprecios-web-https-redirect"
 
@@ -24,7 +24,7 @@ services:
         - "traefik.http.middlewares.ferreprecios-web-https-redirect.redirectscheme.scheme=https"
 
         # HTTPS
-        - "traefik.http.routers.ferreprecios-web-secure.rule=Host(`andrew.byronrm.com`)"
+        - "traefik.http.routers.ferreprecios-web-secure.rule=Host(`ferreprecios.byronrm.com`)"
         - "traefik.http.routers.ferreprecios-web-secure.entrypoints=https"
         - "traefik.http.routers.ferreprecios-web-secure.tls=true"
         - "traefik.http.routers.ferreprecios-web-secure.tls.certresolver=http"
